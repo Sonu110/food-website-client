@@ -76,11 +76,7 @@ function DashbordHeader() {
                      name:"Dashboard",
                      path:"",
                   },
-                  {
-                      id:2,
-                      name:"Restorent",
-                      path:"restorent",
-                  },
+                
                   {
                      id:3,
                      name:"Menu",

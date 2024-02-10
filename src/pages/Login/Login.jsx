@@ -1,56 +1,67 @@
 import { useContext, useState } from "react"
 import { Mycontext } from "../../Context/Context";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import Appconfig from "../../Config";
 
 export default function Login() {
 
 
- const {auth,setauth }= useContext(Mycontext);
+ const {setauth ,setlogin }= useContext(Mycontext);
  const [email, setEmail] = useState("");
  const [passwords, setPasswords] = useState("");
  const [message, setMessage] = useState('');
- const [redirectToHome, setRedirectToHome] = useState(false);
+ const [Loading , setLoading] = useState(false)
+const navigate = useNavigate()
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-  const handleSubmit = async(e) =>  {
-    e.preventDefault();
+  try {
+    const response = await fetch(`${Appconfig}/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        passwords,
+      }),
+    });
 
-    
+    const data = await response.json();
 
-    try {
-      const response = await fetch(`${Appconfig}/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          
-          email,
-          passwords,
-        }),
-      });
-  
-      const data = await response.json();
-  
-      if (response.ok) {
-        setMessage(data.data);
-        setRedirectToHome(true);
-        setauth(!auth)
-        
+    if (response.ok) {
+      if (data.success) {
+        localStorage.setItem('token', data.token);
+        if (data.isAdmin) {
+          alert('Welcome admin');
+          setauth(true);
+          setlogin(true)
+         
+          navigate('/dashbord')
+        } else {
+          alert("user is vaild")
+          setauth(false);
+          setlogin(true)
+          navigate('/')
+          setMessage(`Welcome ${data.data['Name']}! Successful login`);
+        }
       } else {
-        setMessage(data.message);
+        setMessage(`Login failed: ${data.message}`);
       }
-    } catch (error) {
-      console.error('Error:', error);
+    } else {
+      setMessage(`Login failed: ${data.message || 'Something went wrong'}`);
     }
-
-
-  };
-
-  // If redirectToHome is true, perform the navigation
-  if (redirectToHome) {
-    return <Navigate to="/" />;
+  } catch (error) {
+    console.error('Error:', error);
+    setMessage('An error occurred. Please try again.');
+  } finally {
+    setLoading(false);
   }
+};
+
+
+
     return (
       <>
       
@@ -116,7 +127,7 @@ export default function Login() {
             type="submit"
             className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           >
-            Sign in
+           {Loading ? "Login..........." : "Login"} 
           </button>
         </div>
       </form>

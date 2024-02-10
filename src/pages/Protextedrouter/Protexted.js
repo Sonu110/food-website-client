@@ -4,6 +4,7 @@ import { Mycontext } from '../../Context/Context';
 import { Navigate, Outlet} from 'react-router-dom';
 
 function Protexted({ children, user }) {
+  console.log("user" ,user);
   if (user) {
       return <Outlet></Outlet>;
   }

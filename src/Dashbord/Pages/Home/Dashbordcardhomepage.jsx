@@ -20,8 +20,8 @@ function Dashbordcardhomepage() {
 
     {
       id:1,
-      name:"Restorent",
-      path:"/dashbord/restorent",
+      name:"Menu",
+      path:"/dashbord/menu",
       num:"2000"
     },
   
